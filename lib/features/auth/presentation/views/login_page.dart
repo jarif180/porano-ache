@@ -16,6 +16,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _inviteCodeController = TextEditingController();
   UserRole _selectedRole = UserRole.tutor;
   bool _obscurePassword = true;
 
@@ -23,6 +24,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _inviteCodeController.dispose();
     super.dispose();
   }
 
@@ -164,6 +166,20 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     },
                   ),
                   const SizedBox(height: 16),
+
+                  // Optional Invite code for students
+                  if (_selectedRole == UserRole.student) ...[
+                    TextFormField(
+                      controller: _inviteCodeController,
+                      textCapitalization: TextCapitalization.characters,
+                      decoration: InputDecoration(
+                        labelText: isBn ? 'শিক্ষকের ইনভাইট কোড (যেমন: PA9281)' : 'Invite Code from Tutor (e.g. PA9281)',
+                        prefixIcon: const Icon(Icons.key_outlined, color: AppColors.secondary),
+                        helperText: isBn ? 'শিক্ষকের দেওয়া কোড থাকলে দিন' : 'Enter code provided by your tutor',
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
 
                   // Password Input
                   TextFormField(

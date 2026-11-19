@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/bangla_utils.dart';
 import '../../domain/entities/student_entity.dart';
@@ -30,6 +31,20 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  Future<void> _makePhoneCall(String phoneNumber) async {
+    final Uri launchUri = Uri(scheme: 'tel', path: phoneNumber);
+    if (await canLaunchUrl(launchUri)) {
+      await launchUrl(launchUri);
+    }
+  }
+
+  Future<void> _sendSms(String phoneNumber) async {
+    final Uri launchUri = Uri(scheme: 'sms', path: phoneNumber);
+    if (await canLaunchUrl(launchUri)) {
+      await launchUrl(launchUri);
+    }
   }
 
   @override
@@ -135,6 +150,34 @@ class _StudentDetailPageState extends ConsumerState<StudentDetailPage>
                 ),
               ],
             ),
+          ),
+          const SizedBox(height: 12),
+
+          // Quick Guardian Contact Actions
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () => _makePhoneCall(student.parentPhone),
+                  icon: const Icon(Icons.call, size: 18, color: AppColors.primary),
+                  label: Text(
+                    isBn ? 'কল করুন' : 'Call Parent',
+                    style: const TextStyle(fontSize: 13),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () => _sendSms(student.parentPhone),
+                  icon: const Icon(Icons.sms_outlined, size: 18, color: AppColors.secondary),
+                  label: Text(
+                    isBn ? 'বার্তা পাঠান' : 'Send SMS',
+                    style: const TextStyle(fontSize: 13),
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 16),
 

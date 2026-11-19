@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/bangla_utils.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../students/presentation/controllers/student_notifier.dart';
 
 class TutorDashboardPage extends ConsumerStatefulWidget {
   const TutorDashboardPage({super.key});
@@ -19,6 +20,11 @@ class _TutorDashboardPageState extends ConsumerState<TutorDashboardPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isBn = Localizations.localeOf(context).languageCode == 'bn';
+    final studentState = ref.watch(studentListNotifierProvider);
+    final activeStudentsCount = studentState.maybeWhen(
+      data: (students) => students.where((s) => s.isActive).length,
+      orElse: () => 0,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -115,7 +121,7 @@ class _TutorDashboardPageState extends ConsumerState<TutorDashboardPage> {
                       borderRadius: BorderRadius.circular(16),
                       child: _buildStatCard(
                         title: l10n.totalStudents,
-                        value: isBn ? BanglaUtils.toBanglaNumber(3) : '3',
+                        value: isBn ? BanglaUtils.toBanglaNumber(activeStudentsCount) : '$activeStudentsCount',
                         icon: Icons.people_outline,
                         color: AppColors.secondary,
                       ),
