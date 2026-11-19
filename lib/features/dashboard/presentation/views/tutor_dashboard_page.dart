@@ -110,11 +110,15 @@ class _TutorDashboardPageState extends ConsumerState<TutorDashboardPage> {
               Row(
                 children: [
                   Expanded(
-                    child: _buildStatCard(
-                      title: l10n.totalStudents,
-                      value: isBn ? BanglaUtils.toBanglaNumber(8) : '8',
-                      icon: Icons.people_outline,
-                      color: AppColors.secondary,
+                    child: InkWell(
+                      onTap: () => context.push('/students'),
+                      borderRadius: BorderRadius.circular(16),
+                      child: _buildStatCard(
+                        title: l10n.totalStudents,
+                        value: isBn ? BanglaUtils.toBanglaNumber(3) : '3',
+                        icon: Icons.people_outline,
+                        color: AppColors.secondary,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -169,11 +173,7 @@ class _TutorDashboardPageState extends ConsumerState<TutorDashboardPage> {
                       title: l10n.addStudent,
                       icon: Icons.person_add_outlined,
                       color: AppColors.secondary,
-                      onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(isBn ? 'শিক্ষার্থী যোগ ফরম...' : 'Add Student Form...')),
-                        );
-                      },
+                      onTap: () => context.push('/students/add'),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -243,7 +243,11 @@ class _TutorDashboardPageState extends ConsumerState<TutorDashboardPage> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (index) {
-          setState(() => _currentIndex = index);
+          if (index == 2) {
+            context.push('/students');
+          } else {
+            setState(() => _currentIndex = index);
+          }
         },
         destinations: [
           NavigationDestination(
