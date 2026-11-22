@@ -5,6 +5,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/bangla_utils.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../students/presentation/controllers/student_notifier.dart';
+import '../../../schedule/presentation/controllers/schedule_notifier.dart';
 
 class TutorDashboardPage extends ConsumerStatefulWidget {
   const TutorDashboardPage({super.key});
@@ -25,11 +26,21 @@ class _TutorDashboardPageState extends ConsumerState<TutorDashboardPage> {
       data: (students) => students.where((s) => s.isActive).length,
       orElse: () => 0,
     );
+    final scheduleState = ref.watch(scheduleNotifierProvider);
+    final todayDay = DateTime.now().weekday;
+    final todayClassesCount = scheduleState.maybeWhen(
+      data: (schedules) => schedules.where((s) => s.isActive && s.dayOfWeek == todayDay).length,
+      orElse: () => 0,
+    );
 
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.appTitle),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.settings_outlined),
+            onPressed: () => context.push('/settings'),
+          ),
           IconButton(
             icon: const Icon(Icons.notifications_outlined),
             onPressed: () {
@@ -129,11 +140,15 @@ class _TutorDashboardPageState extends ConsumerState<TutorDashboardPage> {
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: _buildStatCard(
-                      title: l10n.todaysClasses,
-                      value: isBn ? BanglaUtils.toBanglaNumber(3) : '3',
-                      icon: Icons.calendar_today_outlined,
-                      color: AppColors.primary,
+                    child: InkWell(
+                      onTap: () => context.push('/schedule'),
+                      borderRadius: BorderRadius.circular(16),
+                      child: _buildStatCard(
+                        title: l10n.todaysClasses,
+                        value: isBn ? BanglaUtils.toBanglaNumber(todayClassesCount) : '$todayClassesCount',
+                        icon: Icons.calendar_today_outlined,
+                        color: AppColors.primary,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -166,11 +181,7 @@ class _TutorDashboardPageState extends ConsumerState<TutorDashboardPage> {
                       title: l10n.markAttendance,
                       icon: Icons.check_circle_outline,
                       color: AppColors.present,
-                      onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(isBn ? 'উপস্থিতি মডিউল লোড হচ্ছে...' : 'Loading Attendance...')),
-                        );
-                      },
+                      onTap: () => context.push('/attendance'),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -188,11 +199,38 @@ class _TutorDashboardPageState extends ConsumerState<TutorDashboardPage> {
                       title: l10n.recordPayment,
                       icon: Icons.payments_outlined,
                       color: AppColors.accent,
-                      onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(isBn ? 'পেমেন্ট রেকর্ড...' : 'Record Payment...')),
-                        );
-                      },
+                      onTap: () => context.push('/payments/record'),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildQuickActionButton(
+                      title: isBn ? 'বিকল্প ক্লাস' : 'Makeup Class',
+                      icon: Icons.event_repeat,
+                      color: AppColors.info,
+                      onTap: () => context.push('/makeup-classes'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildQuickActionButton(
+                      title: isBn ? 'অগ্রগতি নোট' : 'Progress Note',
+                      icon: Icons.note_alt_outlined,
+                      color: AppColors.primaryDark,
+                      onTap: () => context.push('/progress'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildQuickActionButton(
+                      title: isBn ? 'বেতন তালিকা' : 'Fee History',
+                      icon: Icons.receipt_long_outlined,
+                      color: AppColors.present,
+                      onTap: () => context.push('/payments'),
                     ),
                   ),
                 ],
@@ -212,7 +250,7 @@ class _TutorDashboardPageState extends ConsumerState<TutorDashboardPage> {
                     ),
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () => context.push('/schedule'),
                     child: Text(isBn ? 'সব দেখুন' : 'See All'),
                   ),
                 ],
@@ -249,8 +287,12 @@ class _TutorDashboardPageState extends ConsumerState<TutorDashboardPage> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (index) {
-          if (index == 2) {
+          if (index == 1) {
+            context.push('/schedule');
+          } else if (index == 2) {
             context.push('/students');
+          } else if (index == 3) {
+            context.push('/payments');
           } else {
             setState(() => _currentIndex = index);
           }

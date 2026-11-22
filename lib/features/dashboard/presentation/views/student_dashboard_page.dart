@@ -25,6 +25,10 @@ class _StudentDashboardPageState extends ConsumerState<StudentDashboardPage> {
         title: Text(isBn ? 'শিক্ষার্থী পোর্টাল' : 'Student Portal'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.settings_outlined),
+            onPressed: () => context.push('/settings'),
+          ),
+          IconButton(
             icon: const Icon(Icons.logout_rounded),
             onPressed: () => context.go('/login'),
           ),
@@ -300,14 +304,83 @@ class _StudentDashboardPageState extends ConsumerState<StudentDashboardPage> {
               ),
               const SizedBox(height: 20),
 
+              // Quick Action Tiles for Makeup Classes & Progress
+              Row(
+                children: [
+                  Expanded(
+                    child: InkWell(
+                      onTap: () => context.push('/my-makeup-classes'),
+                      borderRadius: BorderRadius.circular(14),
+                      child: Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: AppColors.accent.withValues(alpha: 0.08),
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: AppColors.accent.withValues(alpha: 0.2)),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.event_repeat, color: AppColors.accent, size: 24),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                isBn ? 'বিকল্প ক্লাস' : 'Makeup Classes',
+                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.accent),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: InkWell(
+                      onTap: () => context.push('/my-progress'),
+                      borderRadius: BorderRadius.circular(14),
+                      child: Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(alpha: 0.08),
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.star_outline, color: AppColors.primary, size: 24),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                isBn ? 'আমার ফলাফল' : 'My Progress',
+                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.primary),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+
               // Recent Progress Note
-              Text(
-                isBn ? 'শিক্ষকের মন্তব্য ও অগ্রগতি' : 'Tutor Feedback & Progress',
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    isBn ? 'শিক্ষকের মন্তব্য ও অগ্রগতি' : 'Tutor Feedback & Progress',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => context.push('/my-progress'),
+                    child: Text(isBn ? 'সব দেখুন' : 'See All'),
+                  ),
+                ],
               ),
               const SizedBox(height: 10),
               Container(
@@ -365,7 +438,15 @@ class _StudentDashboardPageState extends ConsumerState<StudentDashboardPage> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (index) {
-          setState(() => _currentIndex = index);
+          if (index == 1) {
+            context.push('/my-schedule');
+          } else if (index == 2) {
+            context.push('/my-attendance');
+          } else if (index == 3) {
+            context.push('/my-payments');
+          } else {
+            setState(() => _currentIndex = index);
+          }
         },
         destinations: [
           NavigationDestination(

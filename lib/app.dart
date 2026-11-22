@@ -8,19 +8,23 @@ import 'l10n/app_localizations.dart';
 // State provider to allow switching language on the fly
 final localeProvider = StateProvider<Locale>((ref) => const Locale('bn'));
 
+// State provider to allow switching theme mode on the fly
+final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.light);
+
 class PoranoAcheApp extends ConsumerWidget {
   const PoranoAcheApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentLocale = ref.watch(localeProvider);
+    final currentThemeMode = ref.watch(themeModeProvider);
 
     return MaterialApp.router(
       title: 'পড়ানো আছে',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.light,
+      themeMode: currentThemeMode,
       routerConfig: AppRouter.router,
       locale: currentLocale,
       localizationsDelegates: const [
